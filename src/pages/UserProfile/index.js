@@ -7,7 +7,7 @@ export default function UserProfile({navigation}) {
     <View style={styles.page}>
       <Header title="Profile" onPress={() => navigation.goBack()} />
       <Gap height={10} />
-      <Profile />
+      <Profile name="Shayna Melinda" desc="Product Designer" />
       <Gap height={14} />
       <List
         name="Edit Profile"
@@ -17,20 +17,20 @@ export default function UserProfile({navigation}) {
         onPress={() => navigation.navigate('UpdateProfile')}
       />
       <List
-        name="Edit Profile"
-        desc="Last update yesterday"
+        name="Language"
+        desc="Available 12 languages"
         type="next"
         icon="language"
       />
       <List
-        name="Edit Profile"
+        name="Give Us Rate"
         desc="Last update yesterday"
         type="next"
         icon="rate"
       />
       <List
-        name="Edit Profile"
-        desc="Last update yesterday"
+        name="Help Center"
+        desc="Read our guidelines"
         type="next"
         icon="help"
       />
