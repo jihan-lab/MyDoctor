@@ -9,6 +9,7 @@ import Messages from './Messages';
 import ChooseDoctor from './ChooseDoctor';
 import Chatting from './Chatiing';
 import UserProfile from './UserProfile';
+import UpdateProfile from './UpdateProfile';
 
 export {
   Splash,
@@ -22,4 +23,5 @@ export {
   ChooseDoctor,
   Chatting,
   UserProfile,
+  UpdateProfile,
 };

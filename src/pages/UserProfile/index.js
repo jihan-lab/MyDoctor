@@ -14,6 +14,7 @@ export default function UserProfile({navigation}) {
         desc="Last update yesterday"
         type="next"
         icon="edit-profile"
+        onPress={() => navigation.navigate('UpdateProfile')}
       />
       <List
         name="Edit Profile"
