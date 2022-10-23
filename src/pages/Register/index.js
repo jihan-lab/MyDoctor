@@ -3,6 +3,7 @@ import {ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Gap, Header, Input, Loading} from '../../components';
 import {colors, useForm} from '../../utils';
 import {Fire} from '../../config';
+import {showMessage, hideMessage} from 'react-native-flash-message';
 // import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Register({navigation}) {
@@ -19,25 +20,37 @@ export default function Register({navigation}) {
     password: '',
   });
 
-  const onContinue = () => {
-    console.log(form);
+  const onContinue = event => {
+    event.preventDefault();
     setLoading(true);
-    // event.preventDefault();
+
     Fire.auth()
       .createUserWithEmailAndPassword(form.email, form.password)
-      .then(userCredential => {
-        // Signed in
+      .then(success => {
         setLoading(false);
         setForm('reset');
-        const user = userCredential.user;
-        console.log('message : ', user);
-        // ...
+        console.log(form);
+        const data = {
+          fullName: form.fullName,
+          profession: form.profession,
+          email: form.email,
+        };
+        Fire.database()
+          .ref('users/' + success.user.uid + '/')
+          .set(data);
+        console.log('message : ', success);
       })
       .catch(error => {
         var errorCode = error.code;
         const errorMessage = error.message;
         setLoading(false);
-        console.log('error register : ', errorCode);
+        showMessage({
+          message: errorMessage,
+          type: 'default',
+          backgroundColor: colors.error,
+          color: colors.white,
+        });
+        console.log('error register : ', error);
       });
   };
   return (
@@ -46,36 +59,38 @@ export default function Register({navigation}) {
         <Header title="Daftar Akun" onPress={() => navigation.goBack()} />
         <View style={styles.content}>
           <ScrollView showsVerticalScrollIndicator={false}>
-            <Input
-              label="Full Name"
-              value={form.fullName}
-              // onChangeText={value => setFullName(value)}
-              onChangeText={value => setForm('fullName', value)}
-            />
-            <Gap height={24} />
-            <Input
-              label="Pekerjaan"
-              value={form.profession}
-              // onChangeText={value => setProfession(value)}
-              onChangeText={value => setForm('profession', value)}
-            />
-            <Gap height={24} />
-            <Input
-              label="Email Address"
-              value={form.email}
-              // onChangeText={value => setEmail(value)}
-              onChangeText={value => setForm('email', value)}
-            />
-            <Gap height={24} />
-            <Input
-              label="Password"
-              value={form.password}
-              // onChangeText={value => setPassword(value)}
-              onChangeText={value => setForm('password', value)}
-              secureTextEntry
-            />
-            <Gap height={40} />
-            <Button title="Continue" onPress={onContinue} />
+            <View>
+              <Input
+                label="Full Name"
+                value={form.fullName}
+                // onChangeText={value => setFullName(value)}
+                onChangeText={value => setForm('fullName', value)}
+              />
+              <Gap height={24} />
+              <Input
+                label="Pekerjaan"
+                value={form.profession}
+                // onChangeText={value => setProfession(value)}
+                onChangeText={value => setForm('profession', value)}
+              />
+              <Gap height={24} />
+              <Input
+                label="Email Address"
+                value={form.email}
+                // onChangeText={value => setEmail(value)}
+                onChangeText={value => setForm('email', value)}
+              />
+              <Gap height={24} />
+              <Input
+                label="Password"
+                value={form.password}
+                // onChangeText={value => setPassword(value)}
+                onChangeText={value => setForm('password', value)}
+                secureTextEntry
+              />
+              <Gap height={40} />
+              <Button title="Continue" onPress={onContinue} />
+            </View>
           </ScrollView>
         </View>
       </View>
