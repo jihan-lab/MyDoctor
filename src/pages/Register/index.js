@@ -1,10 +1,9 @@
 import React, {useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {Button, Gap, Header, Input, Loading} from '../../components';
-import {colors, useForm} from '../../utils';
+import {colors, getData, storeData, useForm} from '../../utils';
 import {Fire} from '../../config';
 import {showMessage, hideMessage} from 'react-native-flash-message';
-// import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Register({navigation}) {
   // const [fullName, setFullName] = useState('');
@@ -22,8 +21,9 @@ export default function Register({navigation}) {
 
   const onContinue = event => {
     event.preventDefault();
-    setLoading(true);
+    console.log(form);
 
+    setLoading(true);
     Fire.auth()
       .createUserWithEmailAndPassword(form.email, form.password)
       .then(success => {
@@ -34,10 +34,13 @@ export default function Register({navigation}) {
           fullName: form.fullName,
           profession: form.profession,
           email: form.email,
+          uid: success.user.uid,
         };
         Fire.database()
           .ref('users/' + success.user.uid + '/')
           .set(data);
+        storeData('user', data);
+        navigation.navigate('UploadPhoto', data);
         console.log('message : ', success);
       })
       .catch(error => {
