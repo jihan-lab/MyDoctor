@@ -1,13 +1,54 @@
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Gap, Header, List, Profile} from '../../components';
+import {colors, getData} from '../../utils';
+import {ILNullPhoto} from '../../assets';
+import {Fire} from '../../config';
+import {showMessage} from 'react-native-flash-message';
 
 export default function UserProfile({navigation}) {
+  useEffect(() => {
+    getData('user').then(res => {
+      const data = res;
+      data.photo = {uri: res.photo};
+      setProfile(data);
+      console.log(data);
+    });
+  }, []);
+
+  const signOut = () => {
+    Fire.auth()
+      .signOut()
+      .then(() => {
+        console.log('success sign out');
+        navigation.replace('GetStarted');
+      })
+      .catch(err => {
+        showMessage({
+          message: err.message,
+          type: 'default',
+          backgroundColor: colors.error,
+          color: colors.white,
+        });
+      });
+  };
+  const [profile, setProfile] = useState({
+    fullName: '',
+    profession: '',
+    photo: ILNullPhoto,
+  });
   return (
     <View style={styles.page}>
       <Header title="Profile" onPress={() => navigation.goBack()} />
       <Gap height={10} />
-      <Profile name="Shayna Melinda" desc="Product Designer" />
+      {profile.fullName.length > 0 && (
+        <Profile
+          name={profile.fullName}
+          desc={profile.profession}
+          photo={profile.photo}
+        />
+      )}
+
       <Gap height={14} />
       <List
         name="Edit Profile"
@@ -29,10 +70,11 @@ export default function UserProfile({navigation}) {
         icon="rate"
       />
       <List
-        name="Help Center"
+        name="Sign Out"
         desc="Read our guidelines"
         type="next"
         icon="help"
+        onPress={signOut}
       />
     </View>
   );
