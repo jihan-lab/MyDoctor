@@ -1,7 +1,5 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
-import {Header, List} from '../../components';
-import {colors} from '../../utils';
+import React, {useEffect, useState} from 'react';
+import {StyleSheet, View} from 'react-native';
 import {
   DummyDoctor1,
   DummyDoctor2,
@@ -9,50 +7,58 @@ import {
   DummyDoctor4,
   DummyDoctor5,
 } from '../../assets';
+import {Header, List} from '../../components';
+import {Fire} from '../../config';
+import {colors} from '../../utils';
 
-export default function ChooseDoctor({navigation}) {
+export default function ChooseDoctor({navigation, route}) {
+  const [listDoctor, setListDoctor] = useState([]);
+
+  const itemCategory = route.params;
+  useEffect(() => {
+    callDoctorByCategory(itemCategory.category);
+  }, []);
+
+  const callDoctorByCategory = category => {
+    Fire.database()
+      .ref('doctors/')
+      .orderByChild('category')
+      .equalTo(category)
+      .once('value')
+      .then(res => {
+        if (res.val()) {
+          const oldData = res.val();
+          const data = [];
+          Object.keys(oldData).map(key => {
+            data.push({
+              id: key,
+              data: oldData[key],
+            });
+          });
+          setListDoctor(data);
+        }
+      });
+  };
+
   return (
     <View style={styles.page}>
       <Header
         type="dark"
-        title="Pilih Dokter Anak"
+        title={`Pilih ${itemCategory.category}`}
         onPress={() => navigation.goBack()}
       />
-      <List
-        type="next"
-        onPress={() => navigation.navigate('Chatting')}
-        name="Alexander Jannie"
-        desc="Wanita"
-        profile={DummyDoctor1}
-      />
-      <List
-        type="next"
-        onPress={() => navigation.navigate('Chatting')}
-        name="John McParker Steve"
-        desc="Pria"
-        profile={DummyDoctor2}
-      />
-      <List
-        type="next"
-        onPress={() => navigation.navigate('Chatting')}
-        name="Nairobi Putri Hayza"
-        desc="Wanita"
-        profile={DummyDoctor3}
-      />
-      <List
-        type="next"
-        onPress={() => navigation.navigate('Chatting')}
-        name="James Rivillia"
-        desc="Pria"
-        profile={DummyDoctor5}
-      />
-      <List
-        type="next"
-        onPress={() => navigation.navigate('Chatting')}
-        name="Liu Yue Tian Park"
-        desc="Wanita"
-        profile={DummyDoctor4}
-      />
+      {listDoctor.map(doctor => {
+        return (
+          <List
+            key={doctor.id}
+            type="next"
+            name={doctor.data.fullName}
+            desc={doctor.data.gender}
+            profile={{uri: doctor.data.photo}}
+            onPress={() => navigation.navigate('DoctorProfile', doctor)}
+          />
+        );
+      })}
     </View>
   );
 }

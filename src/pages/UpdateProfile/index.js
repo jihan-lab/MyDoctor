@@ -2,16 +2,17 @@ import React, {useEffect, useState} from 'react';
 import {ScrollView, StyleSheet, View} from 'react-native';
 import {showMessage} from 'react-native-flash-message';
 import {launchImageLibrary} from 'react-native-image-picker';
-import {DummyDoctor1, ILNullPhoto} from '../../assets';
+import {ILNullPhoto} from '../../assets';
 import {Button, Gap, Header, Input, Profile} from '../../components';
 import {Fire} from '../../config';
-import {colors, getData, storeData} from '../../utils';
+import {colors, getData, showError, storeData} from '../../utils';
 
 export default function UpdateProfile({navigation}) {
   const [profile, setProfile] = useState({
     fullName: '',
     profession: '',
     email: '',
+    photo: photoForDB,
   });
 
   const [password, setPassword] = useState('');
@@ -23,18 +24,14 @@ export default function UpdateProfile({navigation}) {
       const data = res;
       setPhoto({uri: res.photo});
       setProfile(data);
+      setPhotoForDB(res.photo);
     });
   }, []);
 
   const update = () => {
     if (password.length > 0) {
       if (password.length < 6) {
-        showMessage({
-          message: 'Password minimum 6 karakter',
-          type: 'default',
-          backgroundColor: colors.error,
-          color: colors.white,
-        });
+        showError('Password minimum 6 karakter');
       } else {
         updatePassword();
         updateProfileData();
@@ -56,6 +53,7 @@ export default function UpdateProfile({navigation}) {
             backgroundColor: colors.error,
             color: colors.white,
           });
+          console.log('pass err : ', err.message);
         });
       }
     });
