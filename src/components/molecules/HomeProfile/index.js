@@ -17,7 +17,7 @@ export default function HomeProfile({onPress}) {
       console.log('new profile :', data);
       setProfile(res);
     });
-  }, []);
+  }, [profile.uid]);
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
       <Image style={styles.avatar} source={profile.photo} />

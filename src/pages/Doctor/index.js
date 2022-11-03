@@ -1,5 +1,5 @@
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {
   DoctorCategory,
   Gap,
@@ -7,25 +7,27 @@ import {
   NewsItem,
   RatedDoctor,
 } from '../../components';
-import {colors, fonts, getData, showError} from '../../utils';
-import {
-  DummyDoctor1,
-  DummyDoctor2,
-  DummyDoctor3,
-  JSONCategoryDoctor,
-} from '../../assets';
 import {Fire} from '../../config';
+import {colors, fonts, getData, showError} from '../../utils';
 
 export default function Doctor({navigation}) {
   const [news, setNews] = useState([]);
   const [categoryDoctor, setCategoryDoctor] = useState([]);
   const [doctors, setDoctors] = useState([]);
+  const [user, setUser] = useState({});
 
   useEffect(() => {
+    getDataUserFormLocal();
     getCategoryDoctor();
     getTopRatedDoctor();
     getNews();
-  }, []);
+  }, [user.uid]);
+
+  const getDataUserFormLocal = () => {
+    getData('user').then(res => {
+      setUser(res);
+    });
+  };
 
   const getTopRatedDoctor = () => {
     Fire.database()

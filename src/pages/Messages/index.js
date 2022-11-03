@@ -1,31 +1,66 @@
+import React, {useEffect, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import React from 'react';
 import {List} from '../../components';
-import {colors, fonts} from '../../utils';
-import {DummyDoctor1, DummyDoctor8, DummyDoctor3} from '../../assets';
+import {Fire} from '../../config';
+import {colors, fonts, getData} from '../../utils';
 
 export default function Messages({navigation}) {
+  const [user, setUser] = useState({});
+  const [historyChat, setHistoryChat] = useState([]);
+
+  useEffect(() => {
+    getDataUserFormLocal();
+    const rootDB = Fire.database().ref();
+    const urlHistory = `messages/${user.uid}/`;
+    const messageDB = rootDB.child(urlHistory);
+
+    messageDB.on('value', async snapshot => {
+      if (snapshot.val()) {
+        const oldData = snapshot.val();
+        const data = [];
+
+        const promises = await Object.keys(oldData).map(async key => {
+          const urlUidDoctor = `doctors/${oldData[key].uidPartner}`;
+          const detailDoctor = await rootDB.child(urlUidDoctor).once('value');
+          data.push({
+            id: key,
+            detailDoctor: detailDoctor.val(),
+            ...oldData[key],
+          });
+        });
+
+        await Promise.all(promises);
+        console.log('data history chat', data);
+        setHistoryChat(data);
+      }
+    });
+  }, [user.uid]);
+
+  const getDataUserFormLocal = () => {
+    getData('user').then(res => {
+      setUser(res);
+    });
+  };
+
   return (
     <View style={styles.page}>
       <View style={styles.content}>
         <Text style={styles.title}>Messages</Text>
-        <List
-          onPress={() => navigation.navigate('Chatting')}
-          name="Alexander Jannie"
-          profile={DummyDoctor1}
-        />
-        <List
-          onPress={() => navigation.navigate('Chatting')}
-          name="Nairobi Putri Hayzae"
-          desc="Oh tentu saja tidak karena jeruk it..."
-          profile={DummyDoctor8}
-        />
-        <List
-          onPress={() => navigation.navigate('Chatting')}
-          name="John McParker Steve"
-          desc="Oke menurut pak dokter bagaimana unt..."
-          profile={DummyDoctor3}
-        />
+        {historyChat.map(chat => {
+          const dataDoctor = {
+            id: chat.detailDoctor.uid,
+            data: chat.detailDoctor,
+          };
+          return (
+            <List
+              key={chat.id}
+              name={chat.detailDoctor.fullName}
+              profile={{uri: chat.detailDoctor.photo}}
+              desc={chat.lastContentChat}
+              onPress={() => navigation.navigate('Chatting', dataDoctor)}
+            />
+          );
+        })}
       </View>
     </View>
   );

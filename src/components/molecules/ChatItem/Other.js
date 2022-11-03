@@ -3,17 +3,15 @@ import React from 'react';
 import {colors, fonts} from '../../../utils';
 import {DummyDoctor8} from '../../../assets';
 
-export default function Other() {
+export default function Other({text, date, photo}) {
   return (
     <View style={styles.container}>
-      <Image source={DummyDoctor8} style={styles.avatar} />
+      <Image source={photo} style={styles.avatar} />
       <View>
         <View style={styles.chatContent}>
-          <Text style={styles.text}>
-            Ibu dokter, apakah memakan jeruk tiap hari itu buruk?
-          </Text>
+          <Text style={styles.text}>{text}</Text>
         </View>
-        <Text style={styles.date}>4.20 AM</Text>
+        <Text style={styles.date}>{date}</Text>
       </View>
     </View>
   );
@@ -25,6 +23,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     paddingLeft: 16,
     flexDirection: 'row',
+    maxWidth: '80%',
   },
   avatar: {
     height: 30,
@@ -35,8 +34,8 @@ const styles = StyleSheet.create({
   chatContent: {
     backgroundColor: colors.primary,
     padding: 12,
-    paddingLeft: 18,
-    maxWidth: '80%',
+    paddingLeft: 12,
+
     borderRadius: 10,
     borderBottomLeftRadius: 0,
   },

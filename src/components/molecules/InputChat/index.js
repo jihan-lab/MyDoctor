@@ -3,14 +3,20 @@ import React from 'react';
 import {colors, fonts} from '../../../utils';
 import {Button} from '../../atoms';
 
-export default function InputChat() {
+export default function InputChat({value, onChangeText, onButtonPress}) {
   return (
     <View style={styles.container}>
       <TextInput
         style={styles.input}
         placeholder="Tulis pesan untuk Nairobi ..."
+        value={value}
+        onChangeText={onChangeText}
       />
-      <Button type="btn-icon-send" />
+      <Button
+        disable={value.length < 1}
+        type="btn-icon-send"
+        onPress={onButtonPress}
+      />
     </View>
   );
 }
@@ -19,6 +25,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     flexDirection: 'row',
+    color: colors.white,
   },
   input: {
     backgroundColor: colors.disable,
